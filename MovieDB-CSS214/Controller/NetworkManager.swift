@@ -15,7 +15,7 @@ class NetworkManager {
         urlComponent.host = "api.themoviedb.org"
         urlComponent.scheme = "https"
         urlComponent.queryItems = [
-                URLQueryItem(name: "api_key", value: "c4c06d05d28a577ed7881fc04d189e98")
+                URLQueryItem(name: "api_key", value: "d64f043db37db57b9d047064add9a351")
         ]
         return urlComponent
     }()

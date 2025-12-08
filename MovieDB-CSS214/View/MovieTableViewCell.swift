@@ -122,6 +122,15 @@ class MovieTableViewCell: UITableViewCell {
 
     @objc func tap() {
         guard let movie else { return }
+        
+        UIView.animate(withDuration: 0.1, animations: {
+            self.favoriteImage.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.favoriteImage.transform = CGAffineTransform.identity
+            }
+        }
+        
         if isFavorite {
             deleteFavorite(movie: movie)
         } else {

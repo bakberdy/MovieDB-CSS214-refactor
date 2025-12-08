@@ -31,6 +31,9 @@ class ViewController: UIViewController {
     }()
     
     var movieData: [Result] = []
+    private var labelCenterYConstraint: NSLayoutConstraint?
+    private var labelTopConstraint: NSLayoutConstraint?
+    private var isAnimationComplete = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,13 +41,24 @@ class ViewController: UIViewController {
         setupUI()
         apiRequest()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !isAnimationComplete {
+            performLaunchAnimation()
+        }
+    }
 
     private func setupUI() {
         view.addSubview(movieLabel)
         view.addSubview(movieTableView)
         
+        labelCenterYConstraint = movieLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        labelTopConstraint = movieLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        
         NSLayoutConstraint.activate([
-            movieLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            labelCenterYConstraint!,
             movieLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             movieLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             
@@ -53,6 +67,30 @@ class ViewController: UIViewController {
             movieTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             movieTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
+        
+        movieTableView.alpha = 0
+    }
+    
+    private func performLaunchAnimation() {
+        isAnimationComplete = true
+        
+        movieLabel.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+        
+        UIView.animate(withDuration: 0.6, delay: 0.3, options: .curveLinear, animations: {
+            self.movieLabel.transform = CGAffineTransform.identity
+        }) { _ in
+            // Move to top
+            self.labelCenterYConstraint?.isActive = false
+            self.labelTopConstraint?.isActive = true
+            
+            UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+                self.view.layoutIfNeeded()
+            }) { _ in
+                UIView.animate(withDuration: 0.3) {
+                    self.movieTableView.alpha = 1
+                }
+            }
+        }
     }
     
     func apiRequest() {
